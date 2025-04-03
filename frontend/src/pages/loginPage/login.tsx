@@ -1,7 +1,7 @@
 import { Input } from "../../components/inputbox/input";
 import { Button } from "../../components/button/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/card/card";
-import React,{ useState } from "react";
+import { useState } from "react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
