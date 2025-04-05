@@ -1,0 +1,8 @@
+{
+  "name": "bloodbank",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm install --prefix server && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm run start --prefix server"
+  }
+}

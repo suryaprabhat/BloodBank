@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import express from 'express';
-import cors from 'cors';
+import express from "express";
+import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
@@ -11,79 +12,88 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Use the MONGO_URI from the .env file
 const MONGO_URI = process.env.MONGO_URI;
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(MONGO_URI);
-    console.log("✅ Connected to MongoDB successfully!");
-  } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
-    process.exit(1);
-  }
-};
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB Error:", err.message));
 
-connectDB();
-
-// Test route to check if server is working
-app.get('/test', (req, res) => {
-  res.send('Server is working!');
-});
-
+// Mongoose Schema
 const donorSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  bloodGroup: { type: String, required: true },
-  location: { type: String, required: true }
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  bloodGroup: String,
+  location: String,
+  phone: String,
 });
 
-const Donor = mongoose.model('Donor', donorSchema);
+const Donor = mongoose.model("Donor", donorSchema);
 
-// Route to create a new donor
-app.post('/api/donors', async (req, res) => {
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
+
+
+// ✅ Register new donor
+app.post("/api/donors", async (req, res) => {
   try {
-    const { name, email, password, bloodGroup, location } = req.body;
-
-    // Log the request body to check if fields are coming in correctly
-    console.log("Request Body:", req.body);
-
-    if (!name || !email || !password || !bloodGroup || !location) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    const newDonor = new Donor({
-      name,
-      email,
-      password,
-      bloodGroup,
-      location
-    });
-
+    const newDonor = new Donor(req.body);
     await newDonor.save();
-    res.status(201).json({ message: 'Donor registered successfully', donor: newDonor });
-  } catch (error) {
-    console.error("Error creating donor:", error);
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Email already exists' });
-    }
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(201).json({ message: "Donor registered", donor: newDonor });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to register", error: err.message });
   }
 });
 
-// Route to fetch all donors
-app.get('/api/donors', async (req, res) => {
+// ✅ Login route
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const donors = await Donor.find();
-    res.status(200).json(donors);
-  } catch (error) {
-    console.error("Error fetching donors:", error);
-    res.status(500).json({ message: 'Failed to fetch donors', error: error.message });
+    const user = await Donor.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    res.status(200).json({ message: "Login successful", user });
+  } catch (err) {
+    res.status(500).json({ message: "Login error", error: err.message });
   }
 });
 
-// Starting the server
+// ✅ Get Profile
+app.get("/api/profile/:email", async (req, res) => {
+  try {
+    const user = await Donor.findOne({ email: req.params.email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching profile", error: err.message });
+  }
+});
+
+// ✅ GET all donors (with optional filtering by blood group and location)
+app.get("/api/donors", async (req, res) => {
+  try {
+    const { bloodGroup, location } = req.query;
+    const filter = {};
+
+    if (bloodGroup) filter.bloodGroup = bloodGroup;
+    if (location) filter.location = location;
+
+    const donors = await Donor.find(filter);
+    res.status(200).json(donors);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching donors", error: err.message });
+  }
+});
+
+// ✅ Start server
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
