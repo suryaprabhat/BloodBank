@@ -7,22 +7,25 @@ import RequestBlood from './pages/requestPage/requestBlood';
 import Profile from './pages/profile/profile';
 import Login from './pages/loginPage/login';
 import Register from './pages/registerPage/register';
+import { AuthProvider } from './context/AuthContext'; 
+import { Toaster } from 'react-hot-toast';// 👈 import the provider
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar /> 
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/Donors" element={<Donors />} />
-        <Route path="/request" element={<RequestBlood />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider> {/* 👈 wrap everything */}
+      <Toaster position="top-center" />
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/donors" element={<Donors />} />
+          <Route path="/request" element={<RequestBlood />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

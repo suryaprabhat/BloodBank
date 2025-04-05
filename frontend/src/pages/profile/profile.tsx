@@ -7,7 +7,7 @@ interface Donor {
     name: string;
     bloodGroup: string;
     location: string;
-    phone: string;
+    phone?: string;
     email: string;
 }
 
@@ -22,20 +22,13 @@ const Profile = () => {
         email: "",
     });
 
-    // Fetch donor data (Replace with real API call)
     useEffect(() => {
-        const fetchProfile = async () => {
-            const data: Donor = {
-                name: "John Doe",
-                bloodGroup: "O+",
-                location: "New York",
-                phone: "123-456-7890",
-                email: "johndoe@example.com",
-            };
-            setDonor(data);
-            setFormData(data);
-        };
-        fetchProfile();
+        const userData = localStorage.getItem("user");
+        if (userData) {
+            const user: Donor = JSON.parse(userData);
+            setDonor(user);
+            setFormData(user);
+        }
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,13 +36,12 @@ const Profile = () => {
     };
 
     const handleSave = () => {
-        // Send updated data to the backend (Replace with API call)
         console.log("Updated Profile:", formData);
         setDonor(formData);
         setEditMode(false);
     };
 
-    if (!donor) return <p>Loading profile...</p>;
+    if (!donor) return <p>Please Login to See your Profile...</p>;
 
     return (
         <div className="min-h-screen p-6 flex justify-center items-center">
@@ -70,7 +62,7 @@ const Profile = () => {
                             <p><strong>Name:</strong> {donor.name}</p>
                             <p><strong>Blood Group:</strong> {donor.bloodGroup}</p>
                             <p><strong>Location:</strong> {donor.location}</p>
-                            <p><strong>Phone:</strong> {donor.phone}</p>
+                            <p><strong>Phone:</strong> {donor.phone || "N/A"}</p>
                             <p><strong>Email:</strong> {donor.email}</p>
                             <Button onClick={() => setEditMode(true)} className="w-full bg-blue-500">Edit Profile</Button>
                         </>

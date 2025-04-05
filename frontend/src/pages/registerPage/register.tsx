@@ -21,7 +21,7 @@ const Register = () => {
     console.log("Form Data being sent:", formData);
 
     try {
-      const response = await fetch("http://localhost:5000/api/donors", {
+      const response = await fetch("api/donors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -1,21 +1,60 @@
 import { Input } from "../../components/inputbox/input";
 import { Button } from "../../components/button/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/card/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/card/card";
 import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // 👈 Get auth context
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth(); // 👈 Use login from AuthContext
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    // Basic validation
     if (!email.includes("@") || password.length < 6) {
-      setError("Invalid email or password must be at least 6 characters long.");
+      setError(
+        "Invalid email or password must be at least 6 characters long."
+      );
       return;
     }
-    setError("");
-    console.log("Logging in with:", { email, password });
-    // Handle actual login logic here
+
+    try {
+      const response = await axios.post("/api/login", {
+        email,
+        password,
+      });
+
+      const user = response.data.user;
+
+      console.log("✅ Login Success:", user);
+
+      // Save user to global context
+      login(user);
+
+      // ✅ Show welcome message
+      toast.success(`Welcome, ${user.name}!`);
+
+      // Redirect to homepage
+      navigate("/");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || "Login failed");
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
   };
 
   return (
