@@ -8,9 +8,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ✅ Fixed CORS syntax
 app.use(cors({
-  origin: "http://localhost:5173", "blood-bank-tau-plum.vercel.app"
+  origin: ["http://localhost:5173", "https://blood-bank-tau-plum.vercel.app"],
 }));
+
 app.use(express.json());
 
 const MONGO_URI = process.env.MONGO_URI;
@@ -20,7 +22,7 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB Error:", err.message));
 
-// Mongoose Schema
+// ✅ Mongoose Schema
 const donorSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
