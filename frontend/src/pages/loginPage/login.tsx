@@ -7,10 +7,11 @@ import {
   CardTitle,
 } from "../../components/card/card";
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // 👈 Get auth context
 import toast from "react-hot-toast";
+import axiosInstance from "@/axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("/api/login", {
+      const response = await axiosInstance.post("/api/login", {
         email,
         password,
       });

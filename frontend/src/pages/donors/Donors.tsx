@@ -1,3 +1,4 @@
+import axiosInstance from "@/axios";
 import { useEffect, useState } from "react";
 
 type Donor = {
@@ -14,14 +15,19 @@ const Donors = () => {
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
+
   useEffect(() => {
-    fetch("api/donors")
-      .then((res) => res.json())
-      .then((data) => {
-        setDonors(data);
-        setFilteredDonors(data); // Default: show all
-      })
-      .catch((error) => console.error("Error fetching donors:", error));
+    const fetchDonors = async () => {
+      try {
+        const res = await axiosInstance.get("/donors");
+        setDonors(res.data);
+        setFilteredDonors(res.data); // Default: show all
+      } catch (error) {
+        console.error("Error fetching donors:", error);
+      }
+    };
+  
+    fetchDonors();
   }, []);
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Input } from "../../components/inputbox/input";
 import { Button } from "../../components/button/button";
 import { Card, CardContent, CardTitle } from "../../components/card/card";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "@/axios";
 
 const RequestBlood = () => {
   const navigate = useNavigate();
@@ -60,27 +61,23 @@ const RequestBlood = () => {
       setErrors({ ...errors, location: "" });
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Check if any errors exist before submitting
     if (Object.values(errors).some((error) => error !== "")) {
       alert("Please fix the errors before submitting.");
       return;
     }
-
-    const response = await fetch("/api/request-blood", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (response.ok) {
+  
+    try {
+      await axiosInstance.post("/request-blood", formData);
       alert("Blood request submitted successfully!");
       navigate("/thank-you");
-    } else {
-      alert("Error submitting request.");
+    } catch (error: any) {
+      console.error("Error submitting request:", error);
+      const message = error.response?.data?.message || "Error submitting request.";
+      alert(message);
     }
   };
 

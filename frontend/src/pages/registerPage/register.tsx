@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./register.scss"; // Import the SCSS file
+import axiosInstance from "@/axios";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -21,23 +22,16 @@ const Register = () => {
     console.log("Form Data being sent:", formData);
 
     try {
-      const response = await fetch("api/donors", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      // Handle success or failure based on response
-      if (response.ok) {
-        alert(data.message); // Success message
-      } else {
-        alert(data.message || "Something went wrong."); // Error message
-      }
-    } catch (err) {
-      console.error("Error connecting to the server:", err); // Log the error
-      alert("Error connecting to the server.");
+      const response = await axiosInstance.post("/donors", formData);
+    
+      // Axios throws on non-2xx responses, so no need for manual `if (response.ok)`
+      alert(response.data.message); // Success message
+    } catch (error: any) {
+      console.error("Error connecting to the server:", error);
+    
+      // Show error message if available from backend
+      const message = error.response?.data?.message || "Something went wrong.";
+      alert(message);
     }
   };
 
