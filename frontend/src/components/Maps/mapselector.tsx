@@ -1,6 +1,5 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import React from "react";
 
 // Fix for missing marker icons
 import 'leaflet/dist/leaflet.css';
