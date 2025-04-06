@@ -9,6 +9,7 @@ import Login from './pages/loginPage/login';
 import Register from './pages/registerPage/register';
 import { AuthProvider } from './context/AuthContext'; 
 import { Toaster } from 'react-hot-toast';// 👈 import the provider
+import 'leaflet/dist/leaflet.css';
 
 function App() {
   return (

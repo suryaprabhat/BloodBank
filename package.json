@@ -4,5 +4,10 @@
   "scripts": {
     "build": "npm install --prefix server && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "npm run start --prefix server"
+  },
+  "dependencies": {
+    "@arcgis/core": "^4.32.9",
+    "@react-google-maps/api": "^2.20.6",
+    "esri-loader": "^3.7.0"
   }
 }

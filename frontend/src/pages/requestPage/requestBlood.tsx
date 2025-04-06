@@ -5,8 +5,30 @@ import { Card, CardContent, CardTitle } from "../../components/card/card";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/axios";
 
+// 🗺️ Leaflet imports
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// 🧭 Fix default marker icon path
+import iconUrl from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+let DefaultIcon = L.icon({ iconUrl, shadowUrl: iconShadow });
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// 📍 Component to pick a location on map
+const LocationSelector = ({ onSelectLocation }: { onSelectLocation: (location: { lat: number; lng: number }) => void }) => {
+  useMapEvents({
+    click(e) {
+      onSelectLocation(e.latlng);
+    },
+  });
+  return null;
+};
+
 const RequestBlood = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -24,7 +46,9 @@ const RequestBlood = () => {
     location: "",
   });
 
-  // Blood Group Options
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [showMap, setShowMap] = useState(false);
+
   const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -54,22 +78,21 @@ const RequestBlood = () => {
     } else {
       setErrors({ ...errors, name: "" });
     }
-
-    if (e.target.name === "location" && e.target.value.trim() === "") {
-      setErrors({ ...errors, location: "Location is required" });
-    } else {
-      setErrors({ ...errors, location: "" });
-    }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Check if any errors exist before submitting
+
+    if (!formData.location) {
+      alert("Please select a location from the map.");
+      return;
+    }
+
     if (Object.values(errors).some((error) => error !== "")) {
       alert("Please fix the errors before submitting.");
       return;
     }
-  
+
     try {
       await axiosInstance.post("/request-blood", formData);
       alert("Blood request submitted successfully!");
@@ -81,9 +104,16 @@ const RequestBlood = () => {
     }
   };
 
+  const handleMapSelect = (location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    const formatted = `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}`;
+    setFormData({ ...formData, location: formatted });
+    setShowMap(false);
+  };
+
   return (
-    <div className="min-h-screen flex justify-center items-center">
-      <Card className="p-6 w-96 shadow-lg">
+    <div className="min-h-screen flex flex-col items-center py-8">
+      <Card className="p-6 w-[95%] md:w-[400px] shadow-lg">
         <CardTitle className="text-center">Request Blood</CardTitle>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,20 +136,38 @@ const RequestBlood = () => {
             </select>
             {errors.bloodGroup && <p className="text-red-500 text-sm">{errors.bloodGroup}</p>}
 
-            <Input name="location" value={formData.location} onChange={handleChange} placeholder="Location" required />
-            {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+            <div>
+              <Button type="button" onClick={() => setShowMap(!showMap)} className="mb-2 bg-blue-600 text-white w-full">
+                {selectedLocation ? "Change Location on Map" : "Select Location on Map"}
+              </Button>
+              {selectedLocation && (
+                <p className="text-green-600 text-sm">
+                  Location: {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}
+                </p>
+              )}
+            </div>
 
             <select name="urgency" value={formData.urgency} onChange={handleChange} className="w-full p-2 border rounded">
               <option value="Normal">Normal</option>
               <option value="Urgent">Urgent</option>
             </select>
 
-            <Button type="submit" className="w-full bg-red-500">
+            <Button type="submit" className="w-full bg-red-500 text-white">
               Submit Request
             </Button>
           </form>
         </CardContent>
       </Card>
+
+      {showMap && (
+        <div className="w-full md:w-[600px] h-[400px] mt-8 border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg">
+          <MapContainer center={[20.5937, 78.9629]} zoom={5} style={{ height: "100%", width: "100%" }}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='© OpenStreetMap contributors' />
+            <LocationSelector onSelectLocation={handleMapSelect} />
+            {selectedLocation && <Marker position={selectedLocation} />}
+          </MapContainer>
+        </div>
+      )}
     </div>
   );
 };

@@ -33,15 +33,17 @@ const donorSchema = new mongoose.Schema({
 });
 const Donor = mongoose.model("Donor", donorSchema);
 
-// ✅ Request Schema
+// ✅ Request Schema (with lat/lng)
 const requestSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: String, required: true },
   email: { type: String, required: true },
   bloodGroup: { type: String, required: true },
   location: { type: String, required: true },
+  latitude: { type: Number, required: true },     // 🆕 added
+  longitude: { type: Number, required: true },    // 🆕 added
   urgency: { type: String, default: "Normal" },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 const Request = mongoose.model("Request", requestSchema);
 
@@ -59,6 +61,12 @@ app.post("/api/donors", async (req, res) => {
 // ✅ POST: Submit blood request
 app.post("/api/request-blood", async (req, res) => {
   try {
+    const { latitude, longitude } = req.body;
+
+    if (typeof latitude !== "number" || typeof longitude !== "number") {
+      return res.status(400).json({ message: "Latitude and longitude are required and must be numbers" });
+    }
+
     const newRequest = new Request(req.body);
     await newRequest.save();
     res.status(201).json({ message: "Request submitted", request: newRequest });
@@ -67,7 +75,7 @@ app.post("/api/request-blood", async (req, res) => {
   }
 });
 
-// ✅ GET: All blood requests (optional if you want to display them)
+// ✅ GET: All blood requests
 app.get("/api/requests", async (req, res) => {
   try {
     const requests = await Request.find().sort({ createdAt: -1 });
