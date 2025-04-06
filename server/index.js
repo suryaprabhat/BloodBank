@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ Fixed CORS syntax
 app.use(cors({
   origin: "https://blood-bank-tau-plum.vercel.app",
+  credentials: true,
 }));
 
 app.use(express.json());
