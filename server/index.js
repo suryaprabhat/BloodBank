@@ -8,22 +8,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Fixed CORS syntax
+// ✅ Middleware
 app.use(cors({
-  origin: ["https://blood-bank-tau-plum.vercel.app","http://localhost:5173"],
+  origin: ["https://blood-bank-tau-plum.vercel.app", "http://localhost:5173"],
   credentials: true,
 }));
-
 app.use(express.json());
 
+// ✅ MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI;
-
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB Error:", err.message));
 
-// ✅ Mongoose Schema
+// ✅ Donor Schema
 const donorSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -32,10 +31,21 @@ const donorSchema = new mongoose.Schema({
   location: String,
   phone: String,
 });
-
 const Donor = mongoose.model("Donor", donorSchema);
 
-// ✅ Register new donor
+// ✅ Request Schema
+const requestSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  phone: { type: String, required: true },
+  email: { type: String, required: true },
+  bloodGroup: { type: String, required: true },
+  location: { type: String, required: true },
+  urgency: { type: String, default: "Normal" },
+  createdAt: { type: Date, default: Date.now }
+});
+const Request = mongoose.model("Request", requestSchema);
+
+// ✅ POST: Register new donor
 app.post("/api/donors", async (req, res) => {
   try {
     const newDonor = new Donor(req.body);
@@ -46,8 +56,7 @@ app.post("/api/donors", async (req, res) => {
   }
 });
 
-//Request Schema
-// ✅ POST: Create a new blood request
+// ✅ POST: Submit blood request
 app.post("/api/request-blood", async (req, res) => {
   try {
     const newRequest = new Request(req.body);
@@ -58,8 +67,17 @@ app.post("/api/request-blood", async (req, res) => {
   }
 });
 
+// ✅ GET: All blood requests (optional if you want to display them)
+app.get("/api/requests", async (req, res) => {
+  try {
+    const requests = await Request.find().sort({ createdAt: -1 });
+    res.status(200).json(requests);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching requests", error: err.message });
+  }
+});
 
-// ✅ Login route
+// ✅ POST: Login
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -76,7 +94,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// ✅ Get Profile
+// ✅ GET: Profile by email
 app.get("/api/profile/:email", async (req, res) => {
   try {
     const user = await Donor.findOne({ email: req.params.email });
@@ -87,7 +105,7 @@ app.get("/api/profile/:email", async (req, res) => {
   }
 });
 
-// ✅ GET all donors (with optional filtering by blood group and location)
+// ✅ GET: Donors with optional filters
 app.get("/api/donors", async (req, res) => {
   try {
     const { bloodGroup, location } = req.query;
@@ -103,7 +121,7 @@ app.get("/api/donors", async (req, res) => {
   }
 });
 
-// ✅ Start server
+// ✅ Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
