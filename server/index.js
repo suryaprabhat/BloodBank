@@ -103,13 +103,21 @@ app.post("/api/login", async (req, res) => {
 });
 
 // ✅ GET: Profile by email
-app.get("/api/profile/:email", async (req, res) => {
+app.put("/api/profile/:email", async (req, res) => {
   try {
-    const user = await Donor.findOne({ email: req.params.email });
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
+    const updatedDonor = await Donor.findOneAndUpdate(
+      { email: req.params.email },
+      req.body,
+      { new: true } // return updated doc
+    );
+
+    if (!updatedDonor) {
+      return res.status(404).json({ message: "Donor not found" });
+    }
+
+    res.status(200).json(updatedDonor);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching profile", error: err.message });
+    res.status(500).json({ message: "Failed to update profile", error: err.message });
   }
 });
 

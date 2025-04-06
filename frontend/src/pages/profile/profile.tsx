@@ -35,12 +35,28 @@ const Profile = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSave = () => {
-        console.log("Updated Profile:", formData);
-        setDonor(formData);
-        setEditMode(false);
+    const handleSave = async () => {
+        try {
+            const response = await axios.put(
+                `http://localhost:5000/api/profile/${formData.email}`,
+                formData
+            );
+    
+            const updatedDonor = response.data;
+            // Update local state
+            setDonor(updatedDonor);
+            setFormData(updatedDonor);
+            setEditMode(false);
+    
+            // Save updated user to localStorage
+            localStorage.setItem("user", JSON.stringify(updatedDonor));
+    
+            console.log("✅ Profile updated");
+        } catch (err) {
+            console.error("❌ Failed to update profile", err);
+            alert("Something went wrong while saving profile.");
+        }
     };
-
     if (!donor) return <p>Please Login to See your Profile...</p>;
 
     return (
