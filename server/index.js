@@ -48,7 +48,7 @@ app.post("/api/donors", async (req, res) => {
 
 //Request Schema
 // ✅ POST: Create a new blood request
-app.post("/api/requests", async (req, res) => {
+app.post("/api/request-blood", async (req, res) => {
   try {
     const newRequest = new Request(req.body);
     await newRequest.save();
