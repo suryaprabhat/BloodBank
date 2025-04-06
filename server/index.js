@@ -46,6 +46,19 @@ app.post("/api/donors", async (req, res) => {
   }
 });
 
+//Request Schema
+// ✅ POST: Create a new blood request
+app.post("/api/requests", async (req, res) => {
+  try {
+    const newRequest = new Request(req.body);
+    await newRequest.save();
+    res.status(201).json({ message: "Request submitted", request: newRequest });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to submit request", error: err.message });
+  }
+});
+
+
 // ✅ Login route
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
