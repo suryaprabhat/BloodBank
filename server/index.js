@@ -3,6 +3,11 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import path from "path";
+import { fileURLToPath } from "url";
+
+// Define __dirname and __filename
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -31,12 +36,12 @@ const donorSchema = new mongoose.Schema({
 
 const Donor = mongoose.model("Donor", donorSchema);
 
+// Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
-
 
 // ✅ Register new donor
 app.post("/api/donors", async (req, res) => {
