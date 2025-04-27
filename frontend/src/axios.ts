@@ -2,7 +2,8 @@
 import axios, { AxiosRequestConfig } from "axios";
 
 // You can update this to your backend API URL
-const BASE_URL = "https://bloodbank-i3q9.onrender.com/api";
+// const BASE_URL = "https://bloodbank-i3q9.onrender.com/api";
+const BASE_URL = "http://localhost:5000/api";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

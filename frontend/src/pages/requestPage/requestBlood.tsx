@@ -4,27 +4,7 @@ import { Button } from "../../components/button/button";
 import { Card, CardContent, CardTitle } from "../../components/card/card";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/axios";
-
-// 🗺️ Leaflet imports
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// 🧭 Fix default marker icon path
-import iconUrl from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-let DefaultIcon = L.icon({ iconUrl, shadowUrl: iconShadow });
-L.Marker.prototype.options.icon = DefaultIcon;
-
-// 📍 Component to pick a location on map
-const LocationSelector = ({ onSelectLocation }: { onSelectLocation: (location: { lat: number; lng: number }) => void }) => {
-  useMapEvents({
-    click(e) {
-      onSelectLocation(e.latlng);
-    },
-  });
-  return null;
-};
+import LeafletMap from "../../components/leaflet/LeafletMap"; 
 
 const RequestBlood = () => {
   const navigate = useNavigate();
@@ -47,6 +27,7 @@ const RequestBlood = () => {
   });
 
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  console.log("selectedLocation", selectedLocation);
   const [showMap, setShowMap] = useState(false);
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
@@ -54,7 +35,6 @@ const RequestBlood = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    // Validation rules
     if (e.target.name === "phone" && !/^\d{10}$/.test(e.target.value)) {
       setErrors({ ...errors, phone: "Phone number must be exactly 10 digits" });
     } else {
@@ -96,7 +76,7 @@ const RequestBlood = () => {
     try {
       await axiosInstance.post("/request-blood", formData);
       alert("Blood request submitted successfully!");
-      navigate("/thank-you");
+      navigate("/thank you");
     } catch (error: any) {
       console.error("Error submitting request:", error);
       const message = error.response?.data?.message || "Error submitting request.";
@@ -126,7 +106,13 @@ const RequestBlood = () => {
             <Input name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
             {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
 
-            <select name="bloodGroup" value={formData.bloodGroup} onChange={handleChange} className="w-full p-2 border rounded" required>
+            <select
+              name="bloodGroup"
+              value={formData.bloodGroup}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            >
               <option value="">Select Blood Group</option>
               {bloodGroups.map((group) => (
                 <option key={group} value={group}>
@@ -147,7 +133,12 @@ const RequestBlood = () => {
               )}
             </div>
 
-            <select name="urgency" value={formData.urgency} onChange={handleChange} className="w-full p-2 border rounded">
+            <select
+              name="urgency"
+              value={formData.urgency}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+            >
               <option value="Normal">Normal</option>
               <option value="Urgent">Urgent</option>
             </select>
@@ -161,11 +152,7 @@ const RequestBlood = () => {
 
       {showMap && (
         <div className="w-full md:w-[600px] h-[400px] mt-8 border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg">
-          <MapContainer center={[20.5937, 78.9629]} zoom={5} style={{ height: "100%", width: "100%" }}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='© OpenStreetMap contributors' />
-            <LocationSelector onSelectLocation={handleMapSelect} />
-            {selectedLocation && <Marker position={selectedLocation} />}
-          </MapContainer>
+          <LeafletMap onSelectLocation={handleMapSelect} />
         </div>
       )}
     </div>

@@ -59,13 +59,26 @@ app.post("/api/donors", async (req, res) => {
 });
 
 // ✅ POST: Submit blood request
-app.post("/api/request-blood", async (req, res) => {
+app.post("/api/request-blood", async (req, res) => { 
   try {
-    const { latitude, longitude } = req.body;
+    const { location } = req.body
+    let [latitude, longitude] = location.split(",");
+    console.log(req.body);
 
-    if (typeof latitude !== "number" || typeof longitude !== "number") {
-      return res.status(400).json({ message: "Latitude and longitude are required and must be numbers" });
+    // Convert strings to numbers
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
+
+    // Validate the parsed numbers
+    if (isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({ message: "latitude and longitude must be valid numbers" });
     }
+
+    // Assign the parsed numbers back to req.body
+    req.body.latitude = latitude;
+    req.body.longitude = longitude;
+
+    console.log(req.body);
 
     const newRequest = new Request(req.body);
     await newRequest.save();

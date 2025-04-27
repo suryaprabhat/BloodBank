@@ -28,6 +28,8 @@ const Navbar = () => {
         <Link to="/request" className="hover:text-red-400 transition">Request Blood</Link>
         <Link to="/profile" className="hover:text-red-400 transition">Profile</Link>
         <Link to="/register" className="hover:text-red-400 transition">Register</Link>
+        <Link to="/map" className="hover:text-red-400 transition">Map</Link>
+
       </div>
 
       {/* Auth Buttons */}

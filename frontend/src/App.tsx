@@ -9,7 +9,7 @@ import Login from './pages/loginPage/login';
 import Register from './pages/registerPage/register';
 import { AuthProvider } from './context/AuthContext'; 
 import { Toaster } from 'react-hot-toast';// 👈 import the provider
-import 'leaflet/dist/leaflet.css';
+import RequestSuccess from './pages/requestsucess/RequestConfirmation';
 
 function App() {
   return (
@@ -24,6 +24,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/thank you" element={<RequestSuccess />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
