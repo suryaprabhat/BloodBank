@@ -1,0 +1,58 @@
+export interface HospitalLocation {
+  lat: number;
+  lng: number;
+  hospitalName: string;
+  bloodAvailability: string;
+}
+
+export const hospitalMockData: HospitalLocation[] = [
+  { lat: 28.7041, lng: 77.1025, hospitalName: "Delhi General Hospital", bloodAvailability: "A+: 10, B+: 5" },
+  { lat: 19.0760, lng: 72.8777, hospitalName: "Mumbai Blood Center", bloodAvailability: "O+: 8, AB+: 3" },
+  { lat: 13.0827, lng: 80.2707, hospitalName: "Chennai Care Hospital", bloodAvailability: "B-: 4, O-: 6" },
+  { lat: 22.5726, lng: 88.3639, hospitalName: "Kolkata Lifeline Hospital", bloodAvailability: "A-: 7, AB-: 2" },
+  { lat: 12.9716, lng: 77.5946, hospitalName: "Bangalore HealthCare", bloodAvailability: "B+: 12, O+: 9" },
+  { lat: 17.3850, lng: 78.4867, hospitalName: "Hyderabad Red Cross", bloodAvailability: "A+: 15, O-: 5" },
+  { lat: 26.9124, lng: 75.7873, hospitalName: "Jaipur Medical Center", bloodAvailability: "B-: 3, AB+: 6" },
+  { lat: 23.0225, lng: 72.5714, hospitalName: "Ahmedabad Blood Bank", bloodAvailability: "O+: 11, A-: 4" },
+  { lat: 15.2993, lng: 74.1240, hospitalName: "Goa City Hospital", bloodAvailability: "A+: 5, B+: 7" },
+  { lat: 11.0168, lng: 76.9558, hospitalName: "Coimbatore Medical Trust", bloodAvailability: "O-: 3, B+: 8" },
+  { lat: 21.1458, lng: 79.0882, hospitalName: "Nagpur Care Hospital", bloodAvailability: "AB-: 2, A+: 9" },
+  { lat: 30.7333, lng: 76.7794, hospitalName: "Chandigarh Health Point", bloodAvailability: "B+: 6, O+: 7" },
+  { lat: 8.5241, lng: 76.9366, hospitalName: "Trivandrum Red Cross", bloodAvailability: "O+: 5, AB+: 2" },
+  { lat: 9.9252, lng: 78.1198, hospitalName: "Madurai Government Hospital", bloodAvailability: "B-: 2, A+: 7" },
+  { lat: 24.5854, lng: 73.7125, hospitalName: "Udaipur Medical College", bloodAvailability: "O+: 10, B+: 5" },
+  { lat: 22.3072, lng: 73.1812, hospitalName: "Vadodara Blood Center", bloodAvailability: "A+: 8, O+: 6" },
+  { lat: 23.1765, lng: 75.7885, hospitalName: "Ujjain Health Hospital", bloodAvailability: "B+: 7, AB+: 3" },
+  { lat: 25.5941, lng: 85.1376, hospitalName: "Patna Red Hospital", bloodAvailability: "O+: 9, A-: 4" },
+  { lat: 26.8467, lng: 80.9462, hospitalName: "Lucknow Blood Care", bloodAvailability: "B-: 3, O+: 7" },
+  { lat: 27.1767, lng: 78.0081, hospitalName: "Agra City Hospital", bloodAvailability: "A+: 10, AB+: 4" },
+  { lat: 32.7266, lng: 74.8570, hospitalName: "Jammu Lifeline Blood Center", bloodAvailability: "B+: 5, O-: 2" },
+  { lat: 34.0837, lng: 74.7973, hospitalName: "Srinagar Blood Support", bloodAvailability: "O+: 6, A-: 3" },
+  { lat: 31.1471, lng: 75.3412, hospitalName: "Jalandhar Medical Center", bloodAvailability: "B+: 8, AB+: 5" },
+  { lat: 22.7196, lng: 75.8577, hospitalName: "Indore City Blood Bank", bloodAvailability: "A+: 9, O+: 5" },
+  { lat: 26.4499, lng: 80.3319, hospitalName: "Kanpur Blood Line", bloodAvailability: "B-: 2, AB-: 1" },
+  { lat: 19.2183, lng: 72.9781, hospitalName: "Thane Urban Hospital", bloodAvailability: "O+: 7, A-: 4" },
+  { lat: 18.5204, lng: 73.8567, hospitalName: "Pune Health Center", bloodAvailability: "A+: 6, B+: 8" },
+  { lat: 10.8505, lng: 76.2711, hospitalName: "Kerala Medical Hospital", bloodAvailability: "O-: 3, AB+: 2" },
+  { lat: 11.6643, lng: 78.1460, hospitalName: "Salem Blood Bank", bloodAvailability: "B+: 5, O+: 6" },
+  { lat: 10.7905, lng: 78.7047, hospitalName: "Tiruchirapalli City Care", bloodAvailability: "A-: 2, AB+: 4" },
+  { lat: 9.9312, lng: 76.2673, hospitalName: "Kochi Blood Life", bloodAvailability: "O+: 10, B+: 5" },
+  { lat: 16.5062, lng: 80.6480, hospitalName: "Vijayawada Hospital", bloodAvailability: "B+: 7, A+: 6" },
+  { lat: 17.6868, lng: 83.2185, hospitalName: "Visakhapatnam Red Cross", bloodAvailability: "O+: 12, AB+: 3" },
+  { lat: 13.3392, lng: 77.1135, hospitalName: "Tumkur Hospital", bloodAvailability: "B-: 2, O-: 3" },
+  { lat: 12.2958, lng: 76.6394, hospitalName: "Mysuru Health Center", bloodAvailability: "A+: 5, B+: 7" },
+  { lat: 13.6288, lng: 79.4192, hospitalName: "Tirupati City Hospital", bloodAvailability: "O+: 6, AB+: 2" },
+  { lat: 14.4673, lng: 78.8242, hospitalName: "Kadapa Medical Center", bloodAvailability: "B+: 8, O-: 1" },
+  { lat: 18.1124, lng: 79.0193, hospitalName: "Karimnagar Blood Support", bloodAvailability: "O+: 9, A-: 3" },
+  { lat: 21.2514, lng: 81.6296, hospitalName: "Raipur General Hospital", bloodAvailability: "B-: 1, AB+: 2" },
+  { lat: 23.8315, lng: 91.2868, hospitalName: "Agartala Health Hub", bloodAvailability: "A+: 6, O+: 8" },
+  { lat: 26.1445, lng: 91.7362, hospitalName: "Guwahati Blood Hospital", bloodAvailability: "B+: 7, AB+: 4" },
+  { lat: 22.9868, lng: 87.8550, hospitalName: "Kharagpur Medical", bloodAvailability: "O-: 2, A+: 5" },
+  { lat: 15.3173, lng: 75.7139, hospitalName: "Hubli Blood Center", bloodAvailability: "B+: 6, O+: 7" },
+  { lat: 20.2961, lng: 85.8245, hospitalName: "Bhubaneswar Health Care", bloodAvailability: "A-: 4, O+: 5" },
+  { lat: 16.7050, lng: 74.2433, hospitalName: "Kolhapur Blood Bank", bloodAvailability: "O+: 8, B+: 5" },
+  { lat: 21.1702, lng: 72.8311, hospitalName: "Surat Red Cross", bloodAvailability: "AB+: 2, A+: 9" },
+  { lat: 23.2500, lng: 77.4167, hospitalName: "Bhopal HealthCare", bloodAvailability: "O+: 5, B+: 8" },
+  { lat: 24.7914, lng: 85.0002, hospitalName: "Gaya Medical Center", bloodAvailability: "A+: 7, O-: 2" },
+  { lat: 25.0961, lng: 85.3131, hospitalName: "Nalanda Health Services", bloodAvailability: "B+: 4, AB+: 3" }
+]; 

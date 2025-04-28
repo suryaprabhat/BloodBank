@@ -4,7 +4,8 @@ import { Button } from "../../components/button/button";
 import { Card, CardContent, CardTitle } from "../../components/card/card";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/axios";
-import LeafletMap from "../../components/leaflet/LeafletMap"; 
+import LeafletMap from "../../components/leaflet/LeafletMap";
+import { hospitalMockData } from "@/data/hospitalMockData";
 
 const RequestBlood = () => {
   const navigate = useNavigate();
@@ -152,7 +153,10 @@ const RequestBlood = () => {
 
       {showMap && (
         <div className="w-full md:w-[600px] h-[400px] mt-8 border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg">
-          <LeafletMap onSelectLocation={handleMapSelect} />
+          <LeafletMap
+            onSelectLocation={handleMapSelect}
+            hospitalLocations={hospitalMockData}
+          />
         </div>
       )}
     </div>

@@ -6,9 +6,10 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 
 interface Props {
   onSelectLocation: (location: { lat: number; lng: number; placeName: string }) => void;
+  hospitalLocations?: { lat: number; lng: number; hospitalName: string; bloodAvailability: string }[];
 }
 
-const LeafletMap: React.FC<Props> = ({ onSelectLocation }) => {
+const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations }) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
@@ -50,9 +51,20 @@ const LeafletMap: React.FC<Props> = ({ onSelectLocation }) => {
         })
         .addTo(map);
 
+      // Add hospital markers if provided
+      if (hospitalLocations && hospitalLocations.length > 0) {
+        hospitalLocations.forEach((loc) => {
+          const hospitalMarker = L.marker([loc.lat, loc.lng]).addTo(map);
+          hospitalMarker.bindTooltip(
+            `<strong>${loc.hospitalName}</strong><br/>${loc.bloodAvailability}`,
+            { direction: "top" }
+          );
+        });
+      }
+
       mapRef.current = map;
     }
-  }, [onSelectLocation]);
+  }, [onSelectLocation, hospitalLocations]);
 
   const fetchPlaceName = async (lat: number, lng: number): Promise<string> => {
     try {
