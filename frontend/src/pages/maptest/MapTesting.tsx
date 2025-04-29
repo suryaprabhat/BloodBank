@@ -1,4 +1,5 @@
 import ArcGISMap from "../../components/leaflet/LeafletMap";
+import { hospitalMockData } from "@/data/hospitalMockData";
 
 function Map() {
     const handleSelectLocation = (location: { lat: number; lng: number; placeName: string }) => {
@@ -6,9 +7,12 @@ function Map() {
     };
 
     return (
-        <>
-            <ArcGISMap onSelectLocation={handleSelectLocation} />
-        </>
+        <div className="w-full h-screen">
+            <ArcGISMap
+                onSelectLocation={handleSelectLocation}
+                hospitalLocations={hospitalMockData}
+            />
+        </div>
     )
 }
 export default Map

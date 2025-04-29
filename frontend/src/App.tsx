@@ -7,9 +7,10 @@ import RequestBlood from './pages/requestPage/requestBlood';
 import Profile from './pages/profile/profile';
 import Login from './pages/loginPage/login';
 import Register from './pages/registerPage/register';
-import { AuthProvider } from './context/AuthContext'; 
+import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';// 👈 import the provider
 import RequestSuccess from './pages/requestsucess/RequestConfirmation';
+import MapPage from './pages/maptest/MapTesting';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/register" element={<Register />} />
           <Route path="/thank you" element={<RequestSuccess />} />
+          <Route path="/map" element={<MapPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

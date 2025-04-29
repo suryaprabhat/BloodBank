@@ -14,57 +14,73 @@ const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations }) =>
   const markerRef = useRef<L.Marker | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) {
-      const map = L.map("map").setView([20.5937, 78.9629], 5); // Center of India
+    // Initialize the map
+    const map = L.map("map").setView([20.5937, 78.9629], 5); // Center of India
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-      }).addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+    }).addTo(map);
 
-      // @ts-ignore
-      const geocoder = L.Control.geocoder({
-        defaultMarkGeocode: false,
-      })
-        .on("markgeocode", async function (e: any) {
-          const latlng = e.geocode.center;
-          const placeName = e.geocode.name;
+    // Delay and trigger a size invalidation so the map renders correctly in its full container
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
 
-          map.setView(latlng, 15);
+    // Also invalidate once the map is fully ready
+    map.whenReady(() => {
+      map.invalidateSize();
+    });
 
-          if (markerRef.current) {
-            markerRef.current.setLatLng(latlng);
-          } else {
-            markerRef.current = L.marker(latlng, { draggable: true }).addTo(map);
-          }
+    // @ts-ignore
+    const geocoder = L.Control.geocoder({
+      defaultMarkGeocode: false,
+    })
+      .on("markgeocode", async function (e: any) {
+        const latlng = e.geocode.center;
+        const placeName = e.geocode.name;
 
-          onSelectLocation({ lat: latlng.lat, lng: latlng.lng, placeName });
+        map.setView(latlng, 15);
 
-          markerRef.current.on("dragend", async function (event) {
-            const newPos = (event.target as L.Marker).getLatLng();
-            const reversePlace = await fetchPlaceName(newPos.lat, newPos.lng);
-            onSelectLocation({
-              lat: newPos.lat,
-              lng: newPos.lng,
-              placeName: reversePlace,
-            });
+        if (markerRef.current) {
+          markerRef.current.setLatLng(latlng);
+        } else {
+          markerRef.current = L.marker(latlng, { draggable: true }).addTo(map);
+        }
+
+        onSelectLocation({ lat: latlng.lat, lng: latlng.lng, placeName });
+
+        markerRef.current.on("dragend", async function (event) {
+          const newPos = (event.target as L.Marker).getLatLng();
+          const reversePlace = await fetchPlaceName(newPos.lat, newPos.lng);
+          onSelectLocation({
+            lat: newPos.lat,
+            lng: newPos.lng,
+            placeName: reversePlace,
           });
-        })
-        .addTo(map);
-
-      // Add hospital markers if provided
-      if (hospitalLocations && hospitalLocations.length > 0) {
-        hospitalLocations.forEach((loc) => {
-          const hospitalMarker = L.marker([loc.lat, loc.lng]).addTo(map);
-          hospitalMarker.bindTooltip(
-            `<strong>${loc.hospitalName}</strong><br/>${loc.bloodAvailability}`,
-            { direction: "top" }
-          );
         });
-      }
+      })
+      .addTo(map);
 
-      mapRef.current = map;
+    // Add hospital markers if provided
+    if (hospitalLocations && hospitalLocations.length > 0) {
+      hospitalLocations.forEach((loc) => {
+        const hospitalMarker = L.marker([loc.lat, loc.lng]).addTo(map);
+        hospitalMarker.bindTooltip(
+          `<strong>${loc.hospitalName}</strong><br/>${loc.bloodAvailability}`,
+          { direction: "top" }
+        );
+      });
     }
-  }, [onSelectLocation, hospitalLocations]);
+
+    // Store reference for potential future use and cleanup
+    mapRef.current = map;
+
+    // Cleanup on unmount
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
 
   const fetchPlaceName = async (lat: number, lng: number): Promise<string> => {
     try {
