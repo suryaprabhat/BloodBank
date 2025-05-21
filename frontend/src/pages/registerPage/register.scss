@@ -62,3 +62,35 @@
     }
   }
   
+.choice-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.choice-btn {
+  background-color: #ef4444; /* Tailwind red-500 */
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.2s ease;
+}
+
+.choice-btn:hover {
+  transform: rotateX(10deg) rotateY(-10deg) translateZ(8px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+  background-color: #dc2626; /* Tailwind red-600 */
+}
+
+.choice-btn:active {
+  transform: translateZ(0) scale(0.9) translateY(4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #b91c1c; /* Tailwind red-700 */
+}
+  

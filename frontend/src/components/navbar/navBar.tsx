@@ -3,14 +3,21 @@ import { Button } from "../button/button";
 import { BiSolidDonateBlood } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
+import { useHospitalAuth } from "../../context/HospitalAuthContext";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { hospital, logoutHospital } = useHospitalAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleHospitalLogout = () => {
+    logoutHospital();
+    navigate("/hospital/login");
   };
 
   return (
@@ -29,7 +36,6 @@ const Navbar = () => {
         <Link to="/profile" className="hover:text-red-400 transition">Profile</Link>
         <Link to="/register" className="hover:text-red-400 transition">Register</Link>
         <Link to="/map" className="hover:text-red-400 transition">Map</Link>
-
       </div>
 
       {/* Auth Buttons */}
@@ -44,6 +50,22 @@ const Navbar = () => {
           </span>
           <Button
             onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 px-4 py-2 text-white font-medium rounded-lg shadow"
+          >
+            Logout
+          </Button>
+        </div>
+      ) : hospital ? (
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-2">
+            <FaUserCircle
+              className="text-2xl cursor-pointer hover:text-red-400"
+              onClick={() => navigate("/hospital/dashboard")}
+            />
+            <span className="hidden md:inline">{hospital.name}</span>
+          </span>
+          <Button
+            onClick={handleHospitalLogout}
             className="bg-red-500 hover:bg-red-600 px-4 py-2 text-white font-medium rounded-lg shadow"
           >
             Logout

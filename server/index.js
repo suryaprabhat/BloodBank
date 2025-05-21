@@ -5,6 +5,8 @@ import cors from "cors";
 
 dotenv.config();
 
+console.log('MONGO_URI:', process.env.MONGO_URI); // Log the MONGO_URI to verify it's being read
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -46,6 +48,26 @@ const requestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 const Request = mongoose.model("Request", requestSchema);
+
+// 🏥 Hospital Schema
+const hospitalSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  location: String,
+  phone: String,
+  bloodAvailability: {
+    "A+": { type: Number, default: 0 },
+    "A-": { type: Number, default: 0 },
+    "B+": { type: Number, default: 0 },
+    "B-": { type: Number, default: 0 },
+    "AB+": { type: Number, default: 0 },
+    "AB-": { type: Number, default: 0 },
+    "O+": { type: Number, default: 0 },
+    "O-": { type: Number, default: 0 },
+  },
+});
+const Hospital = mongoose.model("Hospital", hospitalSchema);
 
 // ✅ POST: Register new donor
 app.post("/api/donors", async (req, res) => {
@@ -147,6 +169,63 @@ app.get("/api/donors", async (req, res) => {
     res.status(200).json(donors);
   } catch (err) {
     res.status(500).json({ message: "Error fetching donors", error: err.message });
+  }
+});
+
+// 🏥 POST: Hospital registration
+app.post("/api/hospitals/register", async (req, res) => {
+  try {
+    const newHospital = new Hospital(req.body);
+    await newHospital.save();
+    res.status(201).json({ message: "Hospital registered", hospital: newHospital });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to register hospital", error: err.message });
+  }
+});
+
+// 🏥 POST: Hospital login
+app.post("/api/hospitals/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const hospital = await Hospital.findOne({ email });
+    if (!hospital) return res.status(404).json({ message: "Hospital not found" });
+    if (hospital.password !== password) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+    res.status(200).json({ message: "Login successful", hospital });
+  } catch (err) {
+    res.status(500).json({ message: "Login error", error: err.message });
+  }
+});
+
+// 🏥 GET: Hospital profile by ID
+app.get("/api/hospitals/:id", async (req, res) => {
+  try {
+    const hospital = await Hospital.findById(req.params.id);
+    if (!hospital) {
+      return res.status(404).json({ message: "Hospital not found" });
+    }
+    res.status(200).json(hospital);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching hospital", error: err.message });
+  }
+});
+
+// 🏥 PUT: Update blood availability
+app.put("/api/hospitals/:id", async (req, res) => {
+  try {
+    const { bloodAvailability } = req.body;
+    const updatedHospital = await Hospital.findByIdAndUpdate(
+      req.params.id,
+      { bloodAvailability },
+      { new: true }
+    );
+    if (!updatedHospital) {
+      return res.status(404).json({ message: "Hospital not found" });
+    }
+    res.status(200).json({ message: "Availability updated", hospital: updatedHospital });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update availability", error: err.message });
   }
 });
 

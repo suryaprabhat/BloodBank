@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet-control-geocoder";
-import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 
 interface Props {
   onSelectLocation: (location: { lat: number; lng: number; placeName: string }) => void;
   hospitalLocations?: { lat: number; lng: number; hospitalName: string; bloodAvailability: string }[];
+  searchQuery?: string;
 }
 
-const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations }) => {
+const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations, searchQuery }) => {
+  const geocoderRef = useRef<any>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
@@ -21,45 +21,9 @@ const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations }) =>
       attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    // Delay and trigger a size invalidation so the map renders correctly in its full container
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-
-    // Also invalidate once the map is fully ready
-    map.whenReady(() => {
-      map.invalidateSize();
-    });
-
-    // @ts-ignore
-    const geocoder = L.Control.geocoder({
-      defaultMarkGeocode: false,
-    })
-      .on("markgeocode", async function (e: any) {
-        const latlng = e.geocode.center;
-        const placeName = e.geocode.name;
-
-        map.setView(latlng, 15);
-
-        if (markerRef.current) {
-          markerRef.current.setLatLng(latlng);
-        } else {
-          markerRef.current = L.marker(latlng, { draggable: true }).addTo(map);
-        }
-
-        onSelectLocation({ lat: latlng.lat, lng: latlng.lng, placeName });
-
-        markerRef.current.on("dragend", async function (event) {
-          const newPos = (event.target as L.Marker).getLatLng();
-          const reversePlace = await fetchPlaceName(newPos.lat, newPos.lng);
-          onSelectLocation({
-            lat: newPos.lat,
-            lng: newPos.lng,
-            placeName: reversePlace,
-          });
-        });
-      })
-      .addTo(map);
+    // Delay size invalidation
+    setTimeout(() => map.invalidateSize(), 100);
+    map.whenReady(() => map.invalidateSize());
 
     // Add hospital markers if provided
     if (hospitalLocations && hospitalLocations.length > 0) {
@@ -72,7 +36,7 @@ const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations }) =>
       });
     }
 
-    // Store reference for potential future use and cleanup
+    // Store reference for manual search and cleanup
     mapRef.current = map;
 
     // Cleanup on unmount
@@ -81,6 +45,49 @@ const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations }) =>
       mapRef.current = null;
     };
   }, []);
+
+  // Perform geocoding via Nominatim whenever searchQuery changes
+  useEffect(() => {
+    if (!mapRef.current || !searchQuery) return;
+    (async () => {
+      try {
+        const resp = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            searchQuery
+          )}`
+        );
+        const results = await resp.json();
+        if (results.length > 0) {
+          const { lat, lon, display_name } = results[0];
+          const latlng = L.latLng(parseFloat(lat), parseFloat(lon));
+          mapRef.current!.setView(latlng, 13);
+          if (markerRef.current) {
+            markerRef.current.setLatLng(latlng);
+          } else {
+            markerRef.current = L.marker(latlng, { draggable: true }).addTo(
+              mapRef.current!
+            );
+            markerRef.current.on("dragend", async function (e) {
+              const newPos = (e.target as L.Marker).getLatLng();
+              const reversePlace = await fetchPlaceName(newPos.lat, newPos.lng);
+              onSelectLocation({
+                lat: newPos.lat,
+                lng: newPos.lng,
+                placeName: reversePlace,
+              });
+            });
+          }
+          onSelectLocation({
+            lat: latlng.lat,
+            lng: latlng.lng,
+            placeName: display_name,
+          });
+        }
+      } catch (err) {
+        console.error("Geocoding error", err);
+      }
+    })();
+  }, [searchQuery]);
 
   const fetchPlaceName = async (lat: number, lng: number): Promise<string> => {
     try {
