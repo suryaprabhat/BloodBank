@@ -32,7 +32,7 @@ const HospitalDashboard = () => {
                 const data = res.data;
                 setAvailability(data.bloodAvailability);
             })
-            .catch((err) => {
+            .catch(() => {
                 toast.error("Failed to fetch hospital data");
             });
     }, [hospital, navigate]);

@@ -9,7 +9,6 @@ interface Props {
 }
 
 const LeafletMap: React.FC<Props> = ({ onSelectLocation, hospitalLocations, searchQuery }) => {
-  const geocoderRef = useRef<any>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
