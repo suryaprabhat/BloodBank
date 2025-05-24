@@ -19,7 +19,7 @@ const Donors = () => {
   useEffect(() => {
     const fetchDonors = async () => {
       try {
-        const res = await axiosInstance.get("/donors");
+        const res = await axiosInstance.get("/api/donors");
         setDonors(res.data);
         setFilteredDonors(res.data); // Default: show all
       } catch (error) {

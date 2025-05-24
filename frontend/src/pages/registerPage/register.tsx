@@ -40,7 +40,7 @@ const Register = () => {
     console.log("Form Data being sent:", formData);
 
     try {
-      const response = await axiosInstance.post("/donors", formData);
+      const response = await axiosInstance.post("/api/donors", formData);
     
       // Axios throws on non-2xx responses, so no need for manual `if (response.ok)`
       alert(response.data.message); // Success message
