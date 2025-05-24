@@ -9,10 +9,28 @@ const Register = () => {
     password: "",
     bloodGroup: "",
     location: "",
+    alertPreferences: {
+      receiveAlerts: true,
+      alertRadius: 10,
+      urgencyLevel: "All"
+    }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type } = e.target;
+    
+    if (name.startsWith('alertPreferences.')) {
+      const prefName = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        alertPreferences: {
+          ...prev.alertPreferences,
+          [prefName]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+        }
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +97,45 @@ const Register = () => {
             onChange={handleChange}
             required
           />
+
+          {/* Alert Preferences Section */}
+          <div className="alert-preferences">
+            <h3>Alert Preferences</h3>
+            <div className="preference-item">
+              <input
+                type="checkbox"
+                name="alertPreferences.receiveAlerts"
+                checked={formData.alertPreferences.receiveAlerts}
+                onChange={handleChange}
+                id="receiveAlerts"
+              />
+              <label htmlFor="receiveAlerts">Receive Blood Request Alerts</label>
+            </div>
+            <div className="preference-item">
+              <label>Alert Radius (km)</label>
+              <input
+                type="number"
+                name="alertPreferences.alertRadius"
+                value={formData.alertPreferences.alertRadius}
+                onChange={handleChange}
+                min={1}
+                max={100}
+              />
+            </div>
+            <div className="preference-item">
+              <label>Urgency Level</label>
+              <select
+                name="alertPreferences.urgencyLevel"
+                value={formData.alertPreferences.urgencyLevel}
+                onChange={handleChange}
+              >
+                <option value="All">All Requests</option>
+                <option value="Urgent">Urgent Only</option>
+                <option value="Normal">Normal Only</option>
+              </select>
+            </div>
+          </div>
+
           <button type="submit">Register</button>
         </form>
       </div>

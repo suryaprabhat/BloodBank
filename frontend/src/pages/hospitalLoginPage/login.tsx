@@ -33,6 +33,7 @@ const HospitalLogin = () => {
         } catch (err: any) {
             const msg = err.response?.data?.message || "Login failed";
             setError(msg);
+            toast.error(msg);
         }
     };
 

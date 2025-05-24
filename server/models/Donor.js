@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const donorSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -6,6 +6,11 @@ const donorSchema = new mongoose.Schema({
   password: { type: String, required: true },
   bloodGroup: { type: String, required: true },
   location: { type: String, required: true },
+  alertPreferences: {
+    receiveAlerts: { type: Boolean, default: true },
+    alertRadius: { type: Number, default: 10 }, // in kilometers
+    urgencyLevel: { type: String, enum: ['All', 'Urgent', 'Normal'], default: 'All' }
+  }
 });
 
-module.exports = mongoose.model("Donor", donorSchema);
+export default mongoose.model("Donor", donorSchema);
