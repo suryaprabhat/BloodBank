@@ -65,11 +65,6 @@ const HospitalAnalytics = () => {
         units: units
     }));
 
-    // Prepare data for blood requests by urgency
-
-    
-    
-
     // Mock data for donation trends (replace with real data when available)
     const donationTrends: DonationTrend[] = [
         { month: "Jan", donations: 45 },
@@ -145,8 +140,8 @@ const HospitalAnalytics = () => {
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
-                                        {pieChartData.map((index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        {pieChartData.map((_, i) => (
+                                            <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
                                         ))}
                                     </Pie>
                                     <Tooltip />
