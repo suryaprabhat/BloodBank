@@ -4,8 +4,6 @@ import { useHospitalAuth } from "../../context/HospitalAuthContext";
 import axiosInstance from "@/axios";
 import toast from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/card/card";
-import { Input } from "../../components/inputbox/input";
-import { Button } from "../../components/button/button";
 
 interface Donor {
     _id: string;

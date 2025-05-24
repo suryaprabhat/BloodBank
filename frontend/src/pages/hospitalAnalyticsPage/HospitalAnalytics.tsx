@@ -66,15 +66,9 @@ const HospitalAnalytics = () => {
     }));
 
     // Prepare data for blood requests by urgency
-    const requestsByUrgency = bloodRequests.reduce((acc: { [key: string]: number }, request) => {
-        acc[request.urgency] = (acc[request.urgency] || 0) + 1;
-        return acc;
-    }, {});
 
-    const urgencyData = Object.entries(requestsByUrgency).map(([urgency, count]) => ({
-        name: urgency,
-        value: count
-    }));
+    
+    
 
     // Mock data for donation trends (replace with real data when available)
     const donationTrends: DonationTrend[] = [
@@ -151,7 +145,7 @@ const HospitalAnalytics = () => {
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
-                                        {pieChartData.map((entry, index) => (
+                                        {pieChartData.map((index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
