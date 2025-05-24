@@ -31,13 +31,12 @@ const DonorAlerts = () => {
 
         const fetchAlerts = async () => {
             try {
-                // Fetch alerts based on donor's preferences
                 const response = await axiosInstance.get(`/api/donors/${user._id}/alerts`);
                 setAlerts(response.data);
-                setLoading(false);
             } catch (error) {
                 console.error("Error fetching alerts:", error);
                 toast.error("Failed to fetch alerts");
+            } finally {
                 setLoading(false);
             }
         };
@@ -65,6 +64,12 @@ const DonorAlerts = () => {
     };
 
     const handleRespondToRequest = async (requestId: string) => {
+        if (!user) {
+            toast.error("Please log in to respond to requests");
+            navigate("/login");
+            return;
+        }
+
         try {
             await axiosInstance.post(`/requests/${requestId}/respond`, {
                 donorId: user._id
@@ -74,6 +79,11 @@ const DonorAlerts = () => {
             toast.error("Failed to respond to request");
         }
     };
+
+    if (!user) {
+        navigate("/login");
+        return null;
+    }
 
     if (loading) {
         return <div className="p-8">Loading alerts...</div>;
@@ -98,11 +108,11 @@ const DonorAlerts = () => {
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Alert Radius</p>
-                            <p className="font-semibold">{user.alertPreferences?.alertRadius} km</p>
+                            <p className="font-semibold">{user.alertPreferences?.alertRadius || 10} km</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Urgency Level</p>
-                            <p className="font-semibold">{user.alertPreferences?.urgencyLevel}</p>
+                            <p className="font-semibold">{user.alertPreferences?.urgencyLevel || "All"}</p>
                         </div>
                     </div>
                     <Button 

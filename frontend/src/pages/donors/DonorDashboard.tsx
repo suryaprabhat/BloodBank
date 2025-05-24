@@ -36,7 +36,7 @@ const DonorDashboard = () => {
 
     // Fetch donation history
     axiosInstance
-      .get(`/donors/${user._id}/donations`)
+      .get(`/api/donors/${user._id}/donations`)
       .then((res) => {
         setDonationHistory(res.data.donations);
         // Calculate next donation date (3 months from last donation)
@@ -53,7 +53,7 @@ const DonorDashboard = () => {
 
     // Fetch nearby blood requests
     axiosInstance
-      .get(`/donors/${user._id}/nearby-requests`)
+      .get(`/api/donors/${user._id}/nearby-requests`)
       .then((res) => {
         setNearbyRequests(res.data.requests);
       })
@@ -78,57 +78,41 @@ const DonorDashboard = () => {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Donor Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Donor Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <label className="font-medium">Name</label>
-                <p>{user.name}</p>
-              </div>
-              <div>
-                <label className="font-medium">Blood Group</label>
-                <p>{user.bloodGroup}</p>
-              </div>
-              <div>
-                <label className="font-medium">Email</label>
-                <p>{user.email}</p>
-              </div>
-              <div>
-                <label className="font-medium">Next Eligible Donation Date</label>
-                <p>{nextDonationDate || "You can donate now!"}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">Donor Dashboard</h1>
+      
+      {/* Donor Info Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Your Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p><strong>Blood Group:</strong> {user.bloodGroup}</p>
+          <p><strong>Next Eligible Donation Date:</strong> {nextDonationDate || "You can donate now!"}</p>
+        </CardContent>
+      </Card>
 
-        {/* Donation History Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Donation History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {donationHistory.length > 0 ? (
-              <div className="space-y-4">
-                {donationHistory.map((donation, index) => (
-                  <div key={index} className="border-b pb-2">
-                    <p className="font-medium">{new Date(donation.date).toLocaleDateString()}</p>
-                    <p>Hospital: {donation.hospital}</p>
-                    <p>Units: {donation.units}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>No donation history yet</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Donation History Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Donation History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {donationHistory.length > 0 ? (
+            <div className="space-y-4">
+              {donationHistory.map((donation, index) => (
+                <div key={index} className="border-b pb-2">
+                  <p className="font-medium">{new Date(donation.date).toLocaleDateString()}</p>
+                  <p>Hospital: {donation.hospital}</p>
+                  <p>Units: {donation.units}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No donation history yet</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Nearby Blood Requests */}
       <Card className="mt-8">

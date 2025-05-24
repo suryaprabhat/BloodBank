@@ -86,6 +86,22 @@ const HospitalAnalytics = () => {
         { month: "Jun", donations: 58 }
     ];
 
+    const bloodGroupDistribution = bloodRequests.reduce((acc: { [key: string]: number }, request) => {
+        acc[request.bloodGroup] = (acc[request.bloodGroup] || 0) + 1;
+        return acc;
+    }, {});
+
+    const bloodGroupData = Object.entries(bloodGroupDistribution).map(([group, count]) => ({
+        name: group,
+        value: count
+    }));
+
+    // Remove unused entry parameter
+    const pieChartData = bloodGroupData.map(({ name, value }) => ({
+        name,
+        value
+    }));
+
     if (loading) {
         return <div className="p-8">Loading analytics...</div>;
     }
@@ -126,7 +142,7 @@ const HospitalAnalytics = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
-                                        data={urgencyData}
+                                        data={pieChartData}
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
@@ -135,7 +151,7 @@ const HospitalAnalytics = () => {
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
-                                        {urgencyData.map((entry, index) => (
+                                        {pieChartData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
